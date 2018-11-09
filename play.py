@@ -69,7 +69,7 @@ def play(wn, dif):
 
 
     class Bullet:
-        def __init__(self, x, y):
+        def __init__(self, x, y, origin):
             self.sprite = Sprite(get_asset("bullet.png"), 1, size = (10, 10))
 
             self.x = x - self.sprite.width/2
@@ -89,13 +89,21 @@ def play(wn, dif):
             self.sprite.draw()
 
 
+    class Enemy(Sprite):
+        def __init__(self):
+            Sprite.__init__(self, get_asset("alien.png"), 1)
+            self.bullet = None
+        
+        def shoot(self):
+            if choice()
+
 
     class EnemyHorde:
         def __init__(self, x, y, rows, columns):
             self.sprite_img = get_asset("alien.png")
             self.base = Sprite(self.sprite_img, 1)
 
-            self.enemies = [[Sprite(self.sprite_img, 1) for c in range(columns)] for r in range(rows)]
+            self.enemies = [[Enemy() for c in range(columns)] for r in range(rows)]
             self.enemies_left = rows*columns
 
             self.rows = rows
@@ -140,7 +148,7 @@ def play(wn, dif):
             for r in range(self.rows):
                 for c in range(self.columns):
                     if self.enemies[r][c] != 0:
-                        self.enemies[r][c].set_position(x+(self.base.width * c) + 10*c, y+(self.base.height*r) +10*r)
+                        self.enemies[r][c].set_position(x+(self.base.width * c) + 20*c, y+(self.base.height*r) +10*r)
 
         def enemyRight(self):
             """Returns the enemy at the rightmost position"""
@@ -200,7 +208,7 @@ def play(wn, dif):
     fundo = GameImage(get_asset("bg.jpeg"), size=(wn.width, wn.height))
     ship = Ship(wn.width/2, wn.height - 100)
     score = Score()
-    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 5, 10)
+    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 5, 7)
 
     while True:
         if Window.get_keyboard().key_pressed("esc"):
