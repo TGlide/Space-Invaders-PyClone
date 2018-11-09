@@ -102,7 +102,10 @@ def play(wn, dif):
             self.columns = columns
 
             self.direction = 1 # 0 == Left, 1 == Right
-            self.interval = 0.1
+            self.dist_to_move = [10,20,30][dif-1]
+            self.interval = [0.15, 0.1, 0.05][dif-1]
+            self.interval_dif = self.interval/10
+            self.min_interval = 0.02 
             self.time = time()
             
             self.set_pos(x,y)
@@ -168,17 +171,19 @@ def play(wn, dif):
             if time() - self.time >= self.interval and self.enemies_left != 0:
                 self.time = time()
                 if self.enemyRight().x + self.base.width > wn.width or self.enemyLeft().x < 0:
+                    self.interval -= (self.interval_dif if self.interval > self.min_interval else 0)
+                    print(self.interval)
                     self.direction = (self.direction + 1) % 2
-                    self.set_pos(self.x + [-10, 10][self.direction], self.y + 10)
+                    self.set_pos(self.x + [-self.dist_to_move, self.dist_to_move][self.direction], self.y + 10)
                 else:
-                    self.set_pos(self.x + [-10, 10][self.direction], self.y)
+                    self.set_pos(self.x + [-self.dist_to_move, self.dist_to_move][self.direction], self.y)
 
     class Score:
         def __init__(self):
             self.score = "0"
             self.font = Font("0" * (4-len(self.score)) + self.score , 
             font_family=font_path("arcadeclassic"), 
-            size = 100, 
+            size = 70, 
             color=(255,255,255),
             local_font=True)
 
@@ -195,7 +200,7 @@ def play(wn, dif):
     fundo = GameImage(get_asset("bg.jpeg"), size=(wn.width, wn.height))
     ship = Ship(wn.width/2, wn.height - 100)
     score = Score()
-    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 3, 5)
+    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 5, 10)
 
     while True:
         if Window.get_keyboard().key_pressed("esc"):
@@ -208,10 +213,8 @@ def play(wn, dif):
         ship.update()
         ship.draw()
 
-        x = horde.bullet_hit(ship)
-        if x != 0:
-            print(x)
-        score.add(5*x)
+        killed = horde.bullet_hit(ship)
+        score.add(5*killed)
         horde.move()
         horde.draw()
 
