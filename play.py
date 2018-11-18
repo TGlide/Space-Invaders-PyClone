@@ -68,8 +68,13 @@ def play(wn, dif):
                     self.b_timer = time()
 
     class Bullet:
+<<<<<<< HEAD
         def __init__(self, x, y):
             self.sprite = Sprite(get_asset("bullet.png"), 1, size=(10, 10))
+=======
+        def __init__(self, x, y, origin):
+            self.sprite = Sprite(get_asset("bullet.png"), 1, size = (10, 10))
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
 
             self.x = x - self.sprite.width/2
             self.y = y + self.sprite.height
@@ -87,20 +92,45 @@ def play(wn, dif):
         def draw(self):
             self.sprite.draw()
 
+<<<<<<< HEAD
+=======
+
+    class Enemy(Sprite):
+        def __init__(self):
+            Sprite.__init__(self, get_asset("alien.png"), 1)
+            self.bullet = None
+        
+        def shoot(self):
+            if choice()
+
+
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
     class EnemyHorde:
         def __init__(self, x, y, rows, columns):
             self.sprite_img = get_asset("alien.png")
             self.base = Sprite(self.sprite_img, 1)
 
+<<<<<<< HEAD
             self.enemies = [[Sprite(self.sprite_img, 1)
                              for c in range(columns)] for r in range(rows)]
+=======
+            self.enemies = [[Enemy() for c in range(columns)] for r in range(rows)]
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
             self.enemies_left = rows*columns
 
             self.rows = rows
             self.columns = columns
 
+<<<<<<< HEAD
             self.direction = 1  # 0 == Left, 1 == Right
             self.interval = 0.1
+=======
+            self.direction = 1 # 0 == Left, 1 == Right
+            self.dist_to_move = [10,20,30][dif-1]
+            self.interval = [0.15, 0.1, 0.05][dif-1]
+            self.interval_dif = self.interval/10
+            self.min_interval = 0.02 
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
             self.time = time()
 
             self.set_pos(x, y)
@@ -135,8 +165,12 @@ def play(wn, dif):
             for r in range(self.rows):
                 for c in range(self.columns):
                     if self.enemies[r][c] != 0:
+<<<<<<< HEAD
                         self.enemies[r][c].set_position(
                             x+(self.base.width * c) + 10*c, y+(self.base.height*r) + 10*r)
+=======
+                        self.enemies[r][c].set_position(x+(self.base.width * c) + 20*c, y+(self.base.height*r) +10*r)
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
 
         def enemyRight(self):
             """Returns the enemy at the rightmost position"""
@@ -167,20 +201,34 @@ def play(wn, dif):
             if time() - self.time >= self.interval and self.enemies_left != 0:
                 self.time = time()
                 if self.enemyRight().x + self.base.width > wn.width or self.enemyLeft().x < 0:
+                    self.interval -= (self.interval_dif if self.interval > self.min_interval else 0)
+                    print(self.interval)
                     self.direction = (self.direction + 1) % 2
+<<<<<<< HEAD
                     self.set_pos(self.x + [-10, 10]
                                  [self.direction], self.y + 10)
+=======
+                    self.set_pos(self.x + [-self.dist_to_move, self.dist_to_move][self.direction], self.y + 10)
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
                 else:
-                    self.set_pos(self.x + [-10, 10][self.direction], self.y)
+                    self.set_pos(self.x + [-self.dist_to_move, self.dist_to_move][self.direction], self.y)
 
     class Score:
         def __init__(self):
             self.score = "0"
+<<<<<<< HEAD
             self.font = Font("0" * (4-len(self.score)) + self.score,
                              font_family=font_path("arcadeclassic"),
                              size=100,
                              color=(255, 255, 255),
                              local_font=True)
+=======
+            self.font = Font("0" * (4-len(self.score)) + self.score , 
+            font_family=font_path("arcadeclassic"), 
+            size = 70, 
+            color=(255,255,255),
+            local_font=True)
+>>>>>>> 5e9d87b8369005012e95db1ae3930fe30367853d
 
             self.font.set_position(wn.width/2 - self.font.width/2, 10)
 
@@ -195,7 +243,7 @@ def play(wn, dif):
     fundo = GameImage(get_asset("bg.jpeg"), size=(wn.width, wn.height))
     ship = Ship(wn.width/2, wn.height - 100)
     score = Score()
-    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 3, 5)
+    horde = EnemyHorde(10, score.font.y + score.font.height + 10, 5, 7)
 
     while True:
         if Window.get_keyboard().key_pressed("esc"):
@@ -208,10 +256,8 @@ def play(wn, dif):
         ship.update()
         ship.draw()
 
-        x = horde.bullet_hit(ship)
-        if x != 0:
-            print(x)
-        score.add(5*x)
+        killed = horde.bullet_hit(ship)
+        score.add(5*killed)
         horde.move()
         horde.draw()
 
