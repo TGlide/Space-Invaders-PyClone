@@ -12,7 +12,8 @@ from helpers import *
 def play(wn, dif):
     class Ship:
         def __init__(self, x, y):
-            self.sprite = Sprite(get_asset("ship.png"), 1, size=(int(80*(wn.width/1366)), int(85*(wn.height/768))) ) 
+            self.sprite = Sprite(get_asset("ship.png"), 1, size=(
+                int(80*(wn.width/1366)), int(85*(wn.height/768))))
 
             self.x = x - self.sprite.width/2
             self.y = y - self.sprite.height/2
@@ -45,32 +46,30 @@ def play(wn, dif):
             elif self.x < 0:
                 self.x = 0
                 self.speed = 0
-            
 
         def draw(self):
             self.sprite.draw()
-        
+
         def update(self):
             self.sprite.set_position(self.x, self.y)
 
             for b in self.bullets[:]:
                 b.update()
-                if b.despawn: 
+                if b.despawn:
                     self.bullets.remove(b)
                 else:
                     b.draw()
 
-
         def shoot(self):
             if Window.get_keyboard().key_pressed("space"):
                 if len(self.bullets) < self.max_bullets and time() - self.b_timer >= self.interval:
-                    self.bullets.append(Bullet(self.x + self.sprite.width/2, self.y))
+                    self.bullets.append(
+                        Bullet(self.x + self.sprite.width/2, self.y))
                     self.b_timer = time()
-
 
     class Bullet:
         def __init__(self, x, y):
-            self.sprite = Sprite(get_asset("bullet.png"), 1, size = (10, 10))
+            self.sprite = Sprite(get_asset("bullet.png"), 1, size=(10, 10))
 
             self.x = x - self.sprite.width/2
             self.y = y + self.sprite.height
@@ -78,42 +77,41 @@ def play(wn, dif):
             self.speed = [600, 500, 400][dif-1]
 
             self.despawn = False
-        
+
         def update(self):
             self.y -= self.speed * wn.delta_time()
-            if self.y +self.sprite.height <= 0:
+            if self.y + self.sprite.height <= 0:
                 self.despawn = True
             self.sprite.set_position(self.x, self.y)
 
         def draw(self):
             self.sprite.draw()
 
-
-
     class EnemyHorde:
         def __init__(self, x, y, rows, columns):
             self.sprite_img = get_asset("alien.png")
             self.base = Sprite(self.sprite_img, 1)
 
-            self.enemies = [[Sprite(self.sprite_img, 1) for c in range(columns)] for r in range(rows)]
+            self.enemies = [[Sprite(self.sprite_img, 1)
+                             for c in range(columns)] for r in range(rows)]
             self.enemies_left = rows*columns
 
             self.rows = rows
             self.columns = columns
 
-            self.direction = 1 # 0 == Left, 1 == Right
+            self.direction = 1  # 0 == Left, 1 == Right
             self.interval = 0.1
             self.time = time()
-            
-            self.set_pos(x,y)
-                    
+
+            self.set_pos(x, y)
+
         def draw(self):
             """Draws all enemies from self.enemies to window"""
             for r in range(self.rows):
                 for c in range(self.columns):
                     if self.enemies[r][c] != 0:
                         self.enemies[r][c].draw()
-        
+
         def bullet_hit(self, ship):
             """Eliminates hit eneimes"""
             enemy_count = 0
@@ -129,7 +127,7 @@ def play(wn, dif):
                                 self.enemies_left -= 1
                                 break
             return enemy_count
-        
+
         def set_pos(self, x, y):
             """Set positions of all enemies based on x, y of horde"""
             self.x = x
@@ -137,7 +135,8 @@ def play(wn, dif):
             for r in range(self.rows):
                 for c in range(self.columns):
                     if self.enemies[r][c] != 0:
-                        self.enemies[r][c].set_position(x+(self.base.width * c) + 10*c, y+(self.base.height*r) +10*r)
+                        self.enemies[r][c].set_position(
+                            x+(self.base.width * c) + 10*c, y+(self.base.height*r) + 10*r)
 
         def enemyRight(self):
             """Returns the enemy at the rightmost position"""
@@ -145,7 +144,7 @@ def play(wn, dif):
             column = -1
             for r in range(self.rows):
                 rl = self.enemies[r]
-                big = max([rl.index(i) for i in rl if i != 0] + [-1]) 
+                big = max([rl.index(i) for i in rl if i != 0] + [-1])
                 if big > column:
                     column = big
                     row = r
@@ -157,36 +156,37 @@ def play(wn, dif):
             column = self.columns
             for r in range(self.rows):
                 rl = self.enemies[r]
-                small = min([rl.index(i) for i in rl if i != 0] + [self.columns])
+                small = min([rl.index(i)
+                             for i in rl if i != 0] + [self.columns])
                 if small < column:
                     column = small
                     row = r
             return self.enemies[row][column]
-
 
         def move(self):
             if time() - self.time >= self.interval and self.enemies_left != 0:
                 self.time = time()
                 if self.enemyRight().x + self.base.width > wn.width or self.enemyLeft().x < 0:
                     self.direction = (self.direction + 1) % 2
-                    self.set_pos(self.x + [-10, 10][self.direction], self.y + 10)
+                    self.set_pos(self.x + [-10, 10]
+                                 [self.direction], self.y + 10)
                 else:
                     self.set_pos(self.x + [-10, 10][self.direction], self.y)
 
     class Score:
         def __init__(self):
             self.score = "0"
-            self.font = Font("0" * (4-len(self.score)) + self.score , 
-            font_family=font_path("arcadeclassic"), 
-            size = 100, 
-            color=(255,255,255),
-            local_font=True)
+            self.font = Font("0" * (4-len(self.score)) + self.score,
+                             font_family=font_path("arcadeclassic"),
+                             size=100,
+                             color=(255, 255, 255),
+                             local_font=True)
 
             self.font.set_position(wn.width/2 - self.font.width/2, 10)
 
         def add(self, n):
             self.score = str(int(self.score) + n)
-            self.font.change_text("0" * (4-len(self.score)) + self.score )
+            self.font.change_text("0" * (4-len(self.score)) + self.score)
             self.font.set_position(wn.width/2 - self.font.width/2, 10)
 
     ########
@@ -216,8 +216,9 @@ def play(wn, dif):
         horde.draw()
 
         score.font.draw()
-        
+
         wn.update()
+
 
 if __name__ == "__main__":
     wn = Window(1366, 768)
