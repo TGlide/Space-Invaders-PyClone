@@ -10,8 +10,8 @@ from dificuldade import dificuldade
 # GAME CONSTANTS #
 ##################
 
-WIN_W = 1000
-WIN_H = 800
+WIN_W = 1200
+WIN_H = 900
 DIFICULDADE = 1
 
 #############
